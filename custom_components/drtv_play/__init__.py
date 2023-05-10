@@ -45,8 +45,6 @@ SERVICE_PLAY_CHANNEL_SCHEMA = vol.Schema({
 
 _LOGGER = logging.getLogger(__name__)
 
-api = Api()
-channels = api.getLiveTV()
 
 
 async def async_setup(hass, config):
@@ -136,7 +134,14 @@ async def async_setup(hass, config):
         channel = service.data.get(CONF_CHANNEL)
 
         def fetch_video_url():
-            return api.get_channel_url(channels[0])
+            api = Api()
+            channels = api.getLiveTV()
+            
+            url = ''
+            for item in channels:
+                if item['title'].lower() == channel.lower():
+                    url = api.get_channel_url(item)
+            return url
         video_url = await hass.async_add_executor_job(fetch_video_url)
 
         await hass.services.async_call('media_player', 'play_media', {
