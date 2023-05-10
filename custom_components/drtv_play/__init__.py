@@ -5,7 +5,7 @@ from .video_url_fetch.tvapi import Api
 #from .video_url_fetch.video_fetch import video_information_by_id, video_id_by_time, video_url_by_channel, suggested_video_id, random_video_id
 from .validation import category_names
 
-DOMAIN = "svt_play"
+DOMAIN = "drtv_play"
 
 DEPENDENCIES = ['media_player']
 

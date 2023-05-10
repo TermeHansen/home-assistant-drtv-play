@@ -33,6 +33,7 @@ class Api():
     def __init__(self):
         self.cachePath = CACHEPATH
         self.expire_hours = EXPIRE_HOURS
+        self.cleanup_every = 7
         self.caching = True
         self.expire_seconds = 3600*self.expire_hours if self.expire_hours >= 0 else self.expire_hours
         self.init_sqlite_db()
