@@ -10,5 +10,6 @@
     ],
     "codeowners": [],
     "requirements": [
+        "requests_cache"
     ]
 }
