@@ -109,15 +109,19 @@ class Api():
         self.refresh_tokens()
         return self._profile_token
 
-    def get_programcard(self, path, data=None, use_cache=True):
+    def get_programcard(self, path, data=None, use_cache=True, ff='ldp,rpt'):
         url = URL + '/page?'
         if data is None:
             data = {
+                'ff': ff,
                 'item_detail_expand': 'all',
                 'list_page_size': '24',
                 'max_list_prefetch': '3',
                 'path': path
             }
+        else:
+            data['path'] = path
+
         if use_cache and self.caching:
             u = self.session.get(url, params=data, timeout=GET_TIMEOUT)
         else:
@@ -217,6 +221,42 @@ class Api():
         else:
             raise ApiException(u.text)
 
+    def get_latest(self, term):
+        item = {}
+        # serach
+        res = self.search(term)
+        path = ''
+        for key,val in res.items():
+            if key not in ['term', 'total', 'people']:
+#                print(key, val['size'])
+                if val['size'] > 0:
+                    path = res[key]['items'][0]['path']
+                    break
+        if path:
+    #        print(key, path)
+            card = self.get_programcard(path, ff='idp,ldp,rpt')
+            if card['item']['type'] == 'episode':
+                # Make sure we get the latest episode, fix error for bonderøven
+                season = 0
+                for item in card['item']['season']['show']['seasons']['items']:
+                    if item['seasonNumber'] > season:
+    #                    print(item['seasonNumber'], item['path'])
+                        season = item['seasonNumber']
+                        path = item['path']
+                if season > 0:
+                    card = self.get_programcard(path, ff='idp,ldp,rpt')
+
+            if card['item']['type'] == 'season':
+                # find latest
+    #            for item in card['item']['episodes']['items'][:3]:
+    #                print(item['episodeNumber'])
+                item = card['item']['episodes']['items'][0]
+            elif card['item']['type'] == 'program':
+                item = card['item']
+            else:
+                print(key, card['item']['type'], card['item']['title'])
+        return item
+
     def get_home(self):
         data = dict(
             list_page_size=24,
@@ -278,7 +318,6 @@ class Api():
         if u.status_code == 200:
             for stream in u.json():
                 if stream['accessService'] == 'StandardVideo':
-                    stream['srt_subtitles'] = self.handle_subtitle_vtts(stream['subtitles'])
                     return stream
             return None
         else:

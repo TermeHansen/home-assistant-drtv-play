@@ -1,45 +1,64 @@
-from video_fetch import video_url_by_channel, video_id_by_time, video_url_by_video_id, suggested_video_id, random_video_id
 import pytest
+from tvapi import Api
 
+api = Api()
 
-def test_rapport_by_time():
-    id = video_id_by_time('rapport')
-    url = video_url_by_video_id(id)
-    assert url.startswith('http')
+liveurls = '''
+https://drlive01hls.akamaized.net/hls/live/2014185/drlive01/master.m3u8
+https://drlive02hls.akamaized.net/hls/live/2014187/drlive02/master.m3u8
+https://drevent01hls.akamaized.net/hls/live/2014198/drevent01/master.m3u8
+https://drevent02hls.akamaized.net/hls/live/2028694/drevent02/master.m3u8
+https://drlive03hls.akamaized.net/hls/live/2014190/drlive03/master.m3u8
+'''
+def test_live():
+    def geturl(channel):
+        channels = api.getLiveTV()
+        url = ''
+        for item in channels:
+            if item['title'].lower() == channel.lower():
+                url = api.get_channel_url(item)
+        return url
+    for i, channel in enumerate(['dr1', 'dr2', 'DRTV', 'DRTV Ekstra', 'DR Ramasjang']):
+        assert liveurls.splitlines()[i+1] == geturl(channel)
 
+tests = [
+['gurli', 'Gurli Gris: Amerika', 'https://drod20o.akamaized.net/all/encrypted/none/86/628b2678a95a611eac709186/00852108000/stream_fmp4/master_manifest.m3u8'] ,
+['tv-avisen', 'TV AVISEN: Kvaliteten halter i vuggestuer og dagplejer', 'https://drod24f.akamaized.net/all/clear/none/58/645e737e55dfad36f4adcf58/00122320310/stream_fmp4/master_manifest.m3u8'] ,
+['debatten', 'Debatten: Sundhedstyranni?', 'https://drod24m.akamaized.net/all/clear/none/c5/645d471e55dfad36f4adcec5/00212350150/stream_fmp4/master_manifest.m3u8'] ,
+['bonderøven', 'Frank & Kastaniegaarden: Pigsten og Påskelam', 'https://drod20s.akamaized.net/all/clear/none/e4/645226713bcfa2034caf35e4/00952330050/stream_fmp4/master_manifest.m3u8'] ,
+['knight and day', 'Knight and Day', 'https://drod24k.akamaized.net/dk/clear/none/1f/645b84c055dfad36f4adce1f/00021133910/stream_fmp4/master_manifest.m3u8'] ,
+]
+def test():
+    for label, title, turl in tests + [
+        ]:
+        item = api.get_latest(label)
+        url = api.get_stream(item['id'])['url']
+        if item['title'] != title:
+            print([label, item['title'], url], ',')
+        if url != turl:
+            print([label, item['title'], url], ',')
+#    print(item)
+test()
 
-def test_rapport_by_suggested():
-    id = suggested_video_id('rapport')
-    url = video_url_by_video_id(id)
-    assert url.startswith('http')
+test_live()
+# print()
 
+# path = '/episode/frank-and-kastaniegaarden_113317'
+# data['path'] = path
+# card = api.get_programcard(path, data=data)
+# import json
+# with open('debug.json', 'w') as fh: json.dump(card, fh, indent=2)
 
-def test_svt1():
-    url = video_url_by_channel("svt1")
-    assert url.startswith('http')
-
-
-def test_not_found_by_time():
-    with pytest.raises(Exception, match="Could not find program with id: bogus"):
-        video_id_by_time('bogus')
-
-
-def test_not_found_by_suggested():
-    with pytest.raises(Exception, match="Could not find program with id: bogus"):
-        suggested_video_id('bogus')
-
-
-def test_not_found_channel():
-    with pytest.raises(Exception, match="Could not fetch video url: Not found"):
-        video_url_by_channel("svt1337")
-
-
-def test_random():
-    id = random_video_id('aktuellt')
-    same_counter = 0
-    for _ in range(5):
-        new_id = random_video_id('aktuellt')
-        print(new_id)
-        if id == new_id:
-            same_counter += 1
-    assert same_counter != 5
+# season = 0
+# for item in card['item']['season']['show']['seasons']['items']:
+#     if item['seasonNumber'] > season:
+#         print(item['seasonNumber'], item['path'])
+#         season = item['seasonNumber']
+#         path = item['path']
+# if season > 0:
+#     card = api.get_programcard(path)
+#     if card['item']['type'] == 'season':
+#         # find latest
+#         for item in card['item']['episodes']['items'][:3]:
+#             print(item['episodeNumber'])
+#         item = card['item']['episodes']['items'][0]
