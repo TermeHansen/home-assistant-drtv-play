@@ -27,13 +27,13 @@ GET_TIMEOUT = 5
 CACHEPATH = Path(__file__).parent/'cache'
 CACHEPATH.mkdir(exist_ok=True, parents=True)
 EXPIRE_HOURS = 24
-
+CLEAUP_EVERY = 7
 
 class Api():
     def __init__(self):
         self.cachePath = CACHEPATH
         self.expire_hours = EXPIRE_HOURS
-        self.cleanup_every = 7
+        self.cleanup_every = CLEAUP_EVERY
         self.caching = True
         self.expire_seconds = 3600*self.expire_hours if self.expire_hours >= 0 else self.expire_hours
         self.init_sqlite_db()
@@ -223,15 +223,25 @@ class Api():
 
     def get_latest(self, term):
         item = {}
-        # serach
-        res = self.search(term)
-        path = ''
-        for key,val in res.items():
-            if key not in ['term', 'total', 'people']:
-#                print(key, val['size'])
-                if val['size'] > 0:
-                    path = res[key]['items'][0]['path']
-                    break
+        try:
+            id = int(term)
+        except Exception:
+            id = None
+
+        if term.startswith('/'):
+            path = '/serie/alene-i-vildmarken_69758'
+        elif id:
+            path = self.get_item(id)['path']
+        else:
+            # search
+            res = self.search(term)
+            path = ''
+            for key,val in res.items():
+                if key not in ['term', 'total', 'people']:
+    #                print(key, val['size'])
+                    if val['size'] > 0:
+                        path = res[key]['items'][0]['path']
+                        break
         if path:
     #        print(key, path)
             card = self.get_programcard(path, ff='idp,ldp,rpt')
@@ -248,9 +258,16 @@ class Api():
 
             if card['item']['type'] == 'season':
                 # find latest
-    #            for item in card['item']['episodes']['items'][:3]:
-    #                print(item['episodeNumber'])
                 item = card['item']['episodes']['items'][0]
+                if len(card['item']['episodes']['items']) > 1:
+                    label = 'AvailableFrom'
+                    ts = parser.parse(item['customFields'][label])
+                    for litem in card['item']['episodes']['items'][1:]:
+                        lts = parser.parse(litem['customFields'][label])
+                        if lts > ts:
+                            item = litem
+                            ts = lts
+
             elif card['item']['type'] == 'program':
                 item = card['item']
             else:

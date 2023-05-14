@@ -1,3 +1,4 @@
 **/__pycache__
 **/.vscode
-custom_components/drtv_play/video_url_fetch/cache
+custom_components/drtv_play/video_url_fetch/cache/token.p
+custom_components/drtv_play/video_url_fetch/cache/requests_cleaned

@@ -1,7 +1,9 @@
 import pytest
-from tvapi import Api
+import tvapi
 
-api = Api()
+tvapi.EXPIRE_HOURS = -1
+tvapi.CLEAUP_EVERY = 1e6
+api = tvapi.Api()
 
 liveurls = '''
 https://drlive01hls.akamaized.net/hls/live/2014185/drlive01/master.m3u8
@@ -22,20 +24,20 @@ def test_live():
         assert liveurls.splitlines()[i+1] == geturl(channel)
 
 tests = [
-['gurli', 'Gurli Gris: Amerika', 'https://drod20o.akamaized.net/all/encrypted/none/86/628b2678a95a611eac709186/00852108000/stream_fmp4/master_manifest.m3u8'] ,
-['tv-avisen', 'TV AVISEN: Kvaliteten halter i vuggestuer og dagplejer', 'https://drod24f.akamaized.net/all/clear/none/58/645e737e55dfad36f4adcf58/00122320310/stream_fmp4/master_manifest.m3u8'] ,
+['gurli', 'Gurli Gris: Sejlturen hjem', 'https://drod20d.akamaized.net/dk/encrypted/none/5d/644368e4ab5a621810963c5d/00852108640/stream_fmp4/master_manifest.m3u8'] ,
+['tv-avisen', 'TV AVISEN: Er det slut med Erdogan?', 'https://drod23c.akamaized.net/all/clear/none/aa/64611705181329129c686daa/00122320330/stream_fmp4/master_manifest.m3u8'] ,
 ['debatten', 'Debatten: Sundhedstyranni?', 'https://drod24m.akamaized.net/all/clear/none/c5/645d471e55dfad36f4adcec5/00212350150/stream_fmp4/master_manifest.m3u8'] ,
 ['bonderøven', 'Frank & Kastaniegaarden: Pigsten og Påskelam', 'https://drod20s.akamaized.net/all/clear/none/e4/645226713bcfa2034caf35e4/00952330050/stream_fmp4/master_manifest.m3u8'] ,
 ['knight and day', 'Knight and Day', 'https://drod24k.akamaized.net/dk/clear/none/1f/645b84c055dfad36f4adce1f/00021133910/stream_fmp4/master_manifest.m3u8'] ,
+['/serie/alene-i-vildmarken_69758', 'Alene i vildmarken: Hvem vinder i vildmarken?', 'https://drod23h.akamaized.net/all/clear/none/54/64522917a92c5d28106f8454/00922303360/stream_fmp4/master_manifest.m3u8'] ,
+['69758', 'Alene i vildmarken: Hvem vinder i vildmarken?', 'https://drod23h.akamaized.net/all/clear/none/54/64522917a92c5d28106f8454/00922303360/stream_fmp4/master_manifest.m3u8'] ,
 ]
 def test():
     for label, title, turl in tests + [
         ]:
         item = api.get_latest(label)
         url = api.get_stream(item['id'])['url']
-        if item['title'] != title:
-            print([label, item['title'], url], ',')
-        if url != turl:
+        if (item['title'] != title) or (url != turl):
             print([label, item['title'], url], ',')
 #    print(item)
 test()
