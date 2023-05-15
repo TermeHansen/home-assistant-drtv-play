@@ -16,7 +16,7 @@ Play the latest episode from a specific show. You can search by entering any str
 ```
 
 ### Play Channel
-Play one of the DRTV channels. Available channels are DR 1, DR 2, DRTV, DRTV Ekstra and DR Ramasjang.
+Play one of the DRTV channels. Available channels are DR1, DR2, DRTV, DRTV Ekstra and DR Ramasjang.
 ```yaml
 - service: drtv_play.play_channel
   entity_id: media_player.living_room_tv
