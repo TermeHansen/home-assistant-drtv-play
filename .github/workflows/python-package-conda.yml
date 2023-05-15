@@ -1,0 +1,36 @@
+name: unit testing in python
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v3
+      with:
+        python-version: 3.9
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+
+    - name: Lint with flake8
+      run: |
+        conda install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 custom_components/drtv_play --count --select=E9,F63,F7,F82,E501,E722 --max-line=220 --show-source --statistics
+
+    - name: Unit tests
+      run: |
+        conda install -c conda-forge pytest requests-cache dateutils
+        python -m pytest custom_components/drtv_play/video_url_fetch
