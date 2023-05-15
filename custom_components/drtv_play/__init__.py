@@ -2,7 +2,6 @@ import logging
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
 from .video_url_fetch.tvapi import Api
-from .validation import category_names
 
 DOMAIN = "drtv_play"
 
