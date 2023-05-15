@@ -5,45 +5,40 @@ Play DRTV videos and channels via Home Assistant
 ## Available actions
 
 ### Play Latest
-Play the latest video or clip from a specific program. There exists two options to exclude or include videos matching specific categories.
+Play the latest video or clip from a specific program. You can search by entering a string (eg. "gurli"), or by writing the path (eg. /alene-i-vildmarken) or id (integer, eg. 69758) from the url. 
 ```yaml
 - service: drtv_play.play_latest
   entity_id: media_player.living_room_tv
   data:
     program_name: gurli
-    subtitles: false # Optional, default is false
 ```
 
 ### Play Channel
-Play one of the svt channels.
+Play one of the DRTV channels. Available channels are DR 1, DR 2, DRTV, DRTV Ekstra and DR Ramasjang.
 ```yaml
 - service: drtv_play.play_channel
   entity_id: media_player.living_room_tv
   data:
     channel: dr2 # Available channels: dr1, dr2, drtv, drtv ekstra, dr ramasjang
+    subtitles: false # Optional, default is false
 ```
 
 ## Installation
 
-### Add the code
+There are two options for installing the add-on:
 
-Copy the `custom_components/drtv_play` folder in this repository to `<home assistant config>/custom_components/drtv_play`
+1. If you have [HACS](https://hacs.xyz/) installed, you can add this repository as a custom repository and download the add-on, or
+2. Copy the `custom_components/drtv_play` folder in this repository to `<home assistant config>/custom_components/drtv_play`
 
-Or:
-
-Add the repository as a custom repository in HACS
-
-### Active the service
-
-Add:
+Afterwards, you should **add the following** line to your `configuration.yaml` file:
 ```yaml
 drtv_play:
 ```
-to your configuration.yaml file and restart Home Assistant.
+...and **restart Home Assistant**.
 
 ### Use in automations
 
-And then add the automation you want:
+Use in automations as follows:
 ```yaml
 automation:
 - alias:
