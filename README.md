@@ -7,7 +7,7 @@ Play DRTV videos and channels via Home Assistant
 ## Available actions
 
 ### Play Latest
-Play the latest video or clip from a specific program. You can search by entering a string (eg. "gurli"), or by writing the path (eg. /alene-i-vildmarken) or id (integer, eg. 69758) from the url. 
+Play the latest episode from a specific show. You can search by entering any string (eg. "gurli"), or by writing the ending path from https://www.dr.dk/drtv/ (eg. "/serie/alene-i-vildmarken_69758", it should start with '/') or id (integer, eg. 69758) from the url. 
 ```yaml
 - service: drtv_play.play_latest
   entity_id: media_player.living_room_tv
