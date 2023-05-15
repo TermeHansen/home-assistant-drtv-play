@@ -1,3 +1,5 @@
+[![unit testing in python](https://github.com/TermeHansen/home-assistant-drtv-play/actions/workflows/python-package-conda.yml/badge.svg)](https://github.com/TermeHansen/home-assistant-drtv-play/actions/workflows/python-package-conda.yml)
+
 # Home Assistant DRTV Play
 
 Play DRTV videos and channels via Home Assistant
